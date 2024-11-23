@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Spline from '@splinetool/react-spline';
-import Navbar from "./Navbar"; // Import Navbar
+import Navbar from "./Navbar";
 import "./Home.css";
 
 const Home = () => {
