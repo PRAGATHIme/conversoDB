@@ -1,0 +1,433 @@
+{
+  "settings": {
+    "languages": [
+      "en"
+    ],
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
+  },
+  "nluManager": {
+    "settings": {
+      "tag": "nlu-manager"
+    },
+    "locales": [
+      "en"
+    ],
+    "languageNames": {},
+    "domainManagers": {
+      "en": {
+        "settings": {
+          "locale": "en",
+          "trainByDomain": false,
+          "tag": "domain-manager-en",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "bill,display": {
+            "intent": "get.bills",
+            "domain": "default"
+          },
+          "bill,me,show": {
+            "intent": "get.bills",
+            "domain": "default"
+          },
+          "add,item": {
+            "intent": "add.item",
+            "domain": "default"
+          },
+          "detail,get,user": {
+            "intent": "get.user",
+            "domain": "default"
+          },
+          "item,updat": {
+            "intent": "update.item",
+            "domain": "default"
+          },
+          "delet,item": {
+            "intent": "delete.item",
+            "domain": "default"
+          },
+          "item,search": {
+            "intent": "search.item",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "get.bills": "default",
+          "add.item": "default",
+          "get.user": "default",
+          "update.item": "default",
+          "delete.item": "default",
+          "search.item": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "display bills",
+            "intent": "get.bills"
+          },
+          {
+            "domain": "default",
+            "utterance": "show me bills",
+            "intent": "get.bills"
+          },
+          {
+            "domain": "default",
+            "utterance": "add item",
+            "intent": "add.item"
+          },
+          {
+            "domain": "default",
+            "utterance": "get user details",
+            "intent": "get.user"
+          },
+          {
+            "domain": "default",
+            "utterance": "update item",
+            "intent": "update.item"
+          },
+          {
+            "domain": "default",
+            "utterance": "delete item",
+            "intent": "delete.item"
+          },
+          {
+            "domain": "default",
+            "utterance": "search item",
+            "intent": "search.item"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "en",
+              "tag": "nlu-en",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "display": 1,
+              "bill": 1,
+              "show": 1,
+              "me": 1,
+              "add": 1,
+              "item": 1,
+              "get": 1,
+              "user": 1,
+              "detail": 1,
+              "updat": 1,
+              "delet": 1,
+              "search": 1
+            },
+            "intents": {
+              "get.bills": 1,
+              "add.item": 1,
+              "get.user": 1,
+              "update.item": 1,
+              "delete.item": 1,
+              "search.item": 1
+            },
+            "intentFeatures": {
+              "get.bills": {
+                "display": 1,
+                "bill": 1,
+                "show": 1,
+                "me": 1
+              },
+              "add.item": {
+                "add": 1,
+                "item": 1
+              },
+              "get.user": {
+                "get": 1,
+                "user": 1,
+                "detail": 1
+              },
+              "update.item": {
+                "updat": 1,
+                "item": 1
+              },
+              "delete.item": {
+                "delet": 1,
+                "item": 1
+              },
+              "search.item": {
+                "search": 1,
+                "item": 1
+              }
+            },
+            "featuresToIntent": {
+              "display": [
+                "get.bills"
+              ],
+              "bill": [
+                "get.bills"
+              ],
+              "show": [
+                "get.bills"
+              ],
+              "me": [
+                "get.bills"
+              ],
+              "add": [
+                "add.item"
+              ],
+              "item": [
+                "add.item",
+                "update.item",
+                "delete.item",
+                "search.item"
+              ],
+              "get": [
+                "get.user"
+              ],
+              "user": [
+                "get.user"
+              ],
+              "detail": [
+                "get.user"
+              ],
+              "updat": [
+                "update.item"
+              ],
+              "delet": [
+                "delete.item"
+              ],
+              "search": [
+                "search.item"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "en",
+                "tag": "nlu-en",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "display",
+                "bill",
+                "show",
+                "me",
+                "add",
+                "item",
+                "get",
+                "user",
+                "detail",
+                "updat",
+                "delet",
+                "search"
+              ],
+              "intents": [
+                "get.bills",
+                "add.item",
+                "get.user",
+                "update.item",
+                "delete.item",
+                "search.item"
+              ],
+              "perceptrons": [
+                [
+                  4.788704872131348,
+                  7.193778038024902,
+                  2.4043779373168945,
+                  2.4043779373168945,
+                  -0.502490222454071,
+                  -1.850476622581482,
+                  -0.7631682753562927,
+                  -0.7631682753562927,
+                  -0.7631682753562927,
+                  -0.45149609446525574,
+                  -0.440738320350647,
+                  -0.43772879242897034,
+                  2.2898915366536143
+                ],
+                [
+                  -0.29381218552589417,
+                  -0.445679634809494,
+                  -0.14937104284763336,
+                  -0.14937104284763336,
+                  11.042325973510742,
+                  2.252206563949585,
+                  -0.29936155676841736,
+                  -0.29936155676841736,
+                  -0.29936155676841736,
+                  -2.9475576877593994,
+                  -2.9380881786346436,
+                  -2.9114303588867188,
+                  0.7439178052725367
+                ],
+                [
+                  -0.47550058364868164,
+                  -0.7783798575401306,
+                  -0.29418668150901794,
+                  -0.29418668150901794,
+                  -0.2167666107416153,
+                  -1.0593940019607544,
+                  4.344627857208252,
+                  4.344627857208252,
+                  4.344627857208252,
+                  -0.2920773923397064,
+                  -0.27320054173469543,
+                  -0.25321725010871887,
+                  1.2518408516515096
+                ],
+                [
+                  -0.2917553186416626,
+                  -0.46919623017311096,
+                  -0.1685575544834137,
+                  -0.1685575544834137,
+                  -2.9038991928100586,
+                  2.2471084594726562,
+                  -0.25165051221847534,
+                  -0.25165051221847534,
+                  -0.25165051221847534,
+                  11.039690971374512,
+                  -2.9506473541259766,
+                  -2.9412074089050293,
+                  0.7616050954796966
+                ],
+                [
+                  -0.29298728704452515,
+                  -0.4888027608394623,
+                  -0.18698427081108093,
+                  -0.18698427081108093,
+                  -2.93159818649292,
+                  2.255671739578247,
+                  -0.2512911260128021,
+                  -0.2512911260128021,
+                  -0.2512911260128021,
+                  -2.9022769927978516,
+                  11.040685653686523,
+                  -2.94964337348938,
+                  0.7578348902029887
+                ],
+                [
+                  -0.3096047043800354,
+                  -0.5250989198684692,
+                  -0.19720558822155,
+                  -0.19720558822155,
+                  -2.9385056495666504,
+                  2.2696781158447266,
+                  -0.2582715153694153,
+                  -0.2582715153694153,
+                  -0.2582715153694153,
+                  -2.9277193546295166,
+                  -2.8989107608795166,
+                  11.04399585723877,
+                  0.7420517155420823
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "intentDomains": {},
+    "extraSentences": [
+      [
+        "en",
+        "display bills"
+      ],
+      [
+        "en",
+        "show me bills"
+      ],
+      [
+        "en",
+        "add item"
+      ],
+      [
+        "en",
+        "get user details"
+      ],
+      [
+        "en",
+        "update item"
+      ],
+      [
+        "en",
+        "delete item"
+      ],
+      [
+        "en",
+        "search item"
+      ]
+    ]
+  },
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
+  },
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {
+      "en": {
+        "get.bills": [
+          {
+            "answer": "Here are your latest bills: Bill A, Bill B."
+          }
+        ],
+        "add.item": [
+          {
+            "answer": "Please provide the details of the item to add."
+          }
+        ],
+        "get.user": [
+          {
+            "answer": "Here are your details: Name: John Doe, Account: #123456."
+          }
+        ],
+        "update.item": [
+          {
+            "answer": "Please provide the item details you'd like to update."
+          }
+        ],
+        "delete.item": [
+          {
+            "answer": "Please specify the item you'd like to delete."
+          }
+        ],
+        "search.item": [
+          {
+            "answer": "What item are you searching for?"
+          }
+        ]
+      }
+    }
+  },
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {}
+}

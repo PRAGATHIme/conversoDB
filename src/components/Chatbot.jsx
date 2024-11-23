@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Chatbot.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Import the default styles for DatePicker
+import axios from "axios"; // Import axios for HTTP requests
 
 const Chatbot = () => {
   const [chatInput, setChatInput] = useState("");
@@ -11,17 +12,33 @@ const Chatbot = () => {
   const handleButtonClick = (presetText) => {
     setChatInput(presetText);
     addChatMessage("user", presetText);
-    simulateBotResponse(presetText); // Simulate a bot response
   };
 
   const handleInputChange = (e) => {
     setChatInput(e.target.value);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (chatInput.trim() === "") return;
+
+    // Add the user's message to the chat log
     addChatMessage("user", chatInput);
-    simulateBotResponse(chatInput);
+
+    try {
+      // Send the user's message to the backend
+      const response = await axios.post("http://localhost:5000/chat", {
+        message: chatInput,
+      });
+
+      // Get the response message from the backend and display it in the chat log
+      const botMessage = response.data.message;
+      addChatMessage("bot", botMessage);
+    } catch (error) {
+      console.error("Error sending message to backend:", error);
+      addChatMessage("bot", "Sorry, something went wrong.");
+    }
+
+    // Clear the input after sending the message
     setChatInput("");
   };
 
@@ -29,32 +46,12 @@ const Chatbot = () => {
     setChatLog((prevLog) => [...prevLog, { sender, message }]);
   };
 
-  const simulateBotResponse = (userMessage) => {
-    let botMessage = "I didn't understand that.";
-    if (userMessage.toLowerCase().includes("display bills")) {
-      botMessage = "Here are your latest bills: \n1. Bill A \n2. Bill B.";
-    } else if (userMessage.toLowerCase().includes("add item")) {
-      botMessage = "Please provide the details of the item to add.";
-    } else if (userMessage.toLowerCase().includes("help")) {
-      botMessage = "Here are some commands you can try: 'Display Bills', 'Add Item', 'Get User Details', 'Update Item', 'Delete Item'.";
-    } else if (userMessage.toLowerCase().includes("get user details")) {
-      botMessage = "Here are your details: \nName: John Doe \nAccount: #123456";
-    } else if (userMessage.toLowerCase().includes("update item")) {
-      botMessage = "Please provide the item details you'd like to update.";
-    } else if (userMessage.toLowerCase().includes("delete item")) {
-      botMessage = "Please specify the item you'd like to delete.";
-    } else if (userMessage.toLowerCase().includes("search item")) {
-      botMessage = "What item are you searching for?";
-    }
-    addChatMessage("bot", botMessage);
-  };
-
   // Function to handle date selection
   const handleDateChange = (date) => {
     setSelectedDate(date);
     const formattedDate = date ? date.toLocaleDateString() : "";
     addChatMessage("user", `Show me bills for ${formattedDate}`);
-    simulateBotResponse(`bills for ${formattedDate}`);
+    handleSendMessage(); // Trigger message sending with the date format
   };
 
   return (
