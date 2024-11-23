@@ -392,7 +392,7 @@
       "en": {
         "get.bills": [
           {
-            "answer": "Here are your latest bills: Bill A, Bill B."
+            "answer": "Fetching your latest bills..."
           }
         ],
         "add.item": [
@@ -402,22 +402,22 @@
         ],
         "get.user": [
           {
-            "answer": "Here are your details: Name: John Doe, Account: #123456."
+            "answer": "Fetching your details..."
           }
         ],
         "update.item": [
           {
-            "answer": "Please provide the item details you'd like to update."
+            "answer": "Updating the specified item..."
           }
         ],
         "delete.item": [
           {
-            "answer": "Please specify the item you'd like to delete."
+            "answer": "Deleting the specified item..."
           }
         ],
         "search.item": [
           {
-            "answer": "What item are you searching for?"
+            "answer": "Searching for the item..."
           }
         ]
       }
