@@ -3,6 +3,7 @@ import "./Chatbot.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Import the default styles for DatePicker
 import axios from "axios"; // Import axios for HTTP requests
+import Navbar from "./Navbar";
 
 const Chatbot = () => {
   const [chatInput, setChatInput] = useState("");
@@ -56,6 +57,7 @@ const Chatbot = () => {
 
   return (
     <div className="chatbot">
+      <Navbar/>
       <header className="chatbot-header">
         <h1>Chat with conversoDB</h1>
       </header>

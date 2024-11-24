@@ -9,7 +9,7 @@
   .chatbot-header {
     background-color: #4a90e2;
     color: white;
-    padding: 20px;
+    padding: 11px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
@@ -70,11 +70,13 @@
     background: #d6f5d6;
     align-self: flex-end;
     text-align: right;
+    color: #000;
   }
   
   .chat-message.bot {
     background: #e6e6e6;
     align-self: flex-start;
+    color: #000;
   }
   
   .options-panel {
@@ -112,6 +114,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #a6cff0;
+    color: #000;
   }
   
   .chat-input-area button {
