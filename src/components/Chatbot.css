@@ -51,7 +51,7 @@
   .chat-display {
     flex-grow: 1;
     overflow-y: auto;
-    background: white;
+    background: #e4eef4;
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
