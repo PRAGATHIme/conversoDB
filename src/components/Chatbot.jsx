@@ -5,59 +5,84 @@ import "react-datepicker/dist/react-datepicker.css"; // Import the default style
 import axios from "axios"; // Import axios for HTTP requests
 import Navbar from "./Navbar";
 
+// For voice-to-text
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
 const Chatbot = () => {
-  const [chatInput, setChatInput] = useState("");
   const [chatLog, setChatLog] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null); // Store the selected date
+  const [isListening, setIsListening] = useState(false); // For voice input state
+
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+  // Handle voice input
+  const handleStartVoiceInput = () => {
+    if (!recognition) {
+      addChatMessage("bot", "Voice recognition is not supported on this browser.");
+      return;
+    }
+
+    setIsListening(true);
+    recognition.start();
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      addChatMessage("user", transcript); // Add directly to chat log
+      sendMessageToBackend(transcript); // Send message to backend
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event) => {
+      setIsListening(false);
+      console.error("Voice recognition error:", event.error);
+      addChatMessage("bot", "Sorry, I couldn't understand. Please try again.");
+    };
+  };
 
   const handleButtonClick = (presetText) => {
-    setChatInput(presetText);
-    addChatMessage("user", presetText);
+    addChatMessage("user", presetText); // Add directly to chat log
+    sendMessageToBackend(presetText); // Send message to backend
   };
 
-  const handleInputChange = (e) => {
-    setChatInput(e.target.value);
+  const handleSendMessage = async (message) => {
+    if (message.trim() === "") return;
+    addChatMessage("user", message); // Add user message to the chat log
+    sendMessageToBackend(message); // Send message to backend
   };
 
-  const handleSendMessage = async () => {
-    if (chatInput.trim() === "") return;
-
-    // Add the user's message to the chat log
-    addChatMessage("user", chatInput);
-
+  const sendMessageToBackend = async (message) => {
     try {
-      // Send the user's message to the backend
       const response = await axios.post("http://localhost:5000/chat", {
-        message: chatInput,
+        message,
       });
 
-      // Get the response message from the backend and display it in the chat log
       const botMessage = response.data.message;
-      addChatMessage("bot", botMessage);
+      addChatMessage("bot", botMessage); // Add bot response to the chat log
     } catch (error) {
       console.error("Error sending message to backend:", error);
       addChatMessage("bot", "Sorry, something went wrong.");
     }
-
-    // Clear the input after sending the message
-    setChatInput("");
   };
 
   const addChatMessage = (sender, message) => {
     setChatLog((prevLog) => [...prevLog, { sender, message }]);
   };
 
-  // Function to handle date selection
   const handleDateChange = (date) => {
     setSelectedDate(date);
     const formattedDate = date ? date.toLocaleDateString() : "";
-    addChatMessage("user", `Show me bills for ${formattedDate}`);
-    handleSendMessage(); // Trigger message sending with the date format
+    const message = `Show me bills for ${formattedDate}`;
+    addChatMessage("user", message);
+    sendMessageToBackend(message); // Send formatted date as message
   };
 
   return (
     <div className="chatbot">
-      <Navbar/>
+      <Navbar />
       <header className="chatbot-header">
         <h1>Chat with conversoDB</h1>
       </header>
@@ -103,11 +128,22 @@ const Chatbot = () => {
           <div className="chat-input-area">
             <input
               type="text"
-              value={chatInput}
-              onChange={handleInputChange}
               placeholder="Type your message here..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage(e.target.value);
+                  e.target.value = ""; // Clear input after sending
+                }
+              }}
             />
-            <button onClick={handleSendMessage}>Send</button>
+            <button onClick={() => handleSendMessage(document.querySelector('.chat-input-area input').value)}>Send</button>
+            <button
+              onClick={handleStartVoiceInput}
+              disabled={isListening}
+              className="voice-input-button"
+            >
+              <i className={`fa-solid fa-microphone ${isListening ? "listening" : ""}`}></i>
+            </button>
           </div>
         </div>
       </div>
