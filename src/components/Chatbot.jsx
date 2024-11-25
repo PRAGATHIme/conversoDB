@@ -36,6 +36,7 @@ const Chatbot = () => {
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       addChatMessage("user", transcript);
+      sendMessage(transcript);
     };
 
     recognition.onend = () => {
@@ -149,6 +150,9 @@ const Chatbot = () => {
               type="text"
               value={chatInput}
               onChange={handleInputChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSendMessage();
+              }}
               placeholder="Type your message here..."
             />
             <button onClick={handleSendMessage}>Send</button>

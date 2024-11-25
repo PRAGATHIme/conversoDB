@@ -23,27 +23,61 @@ const db = await mysql.createPool({
 });
 //add here
 
+const initializeTables = async () => {
+  const createTables = [
+    `
+    CREATE TABLE IF NOT EXISTS Bills (
+        BillID INT AUTO_INCREMENT PRIMARY KEY,
+        BillDate DATETIME,
+        CustomerName VARCHAR(250),
+        TotalAmount DECIMAL(10, 2),
+        PaymentStatus VARCHAR(250)
+    )
+    `    
+  ];
+
+  try {
+    for (const query of createTables) {
+      await db.query(query);
+    }
+    console.log("Tables initialized successfully.");
+  } catch (error) {
+    console.error("Error initializing tables:", error);
+  }
+};
+
+// Initialize tables before starting the server
+await initializeTables();
+
 
 
 const manager = new NlpManager({ languages: ["en"] });
 
 // Train the NLP model with intents and responses
 const trainNLPModel = async () => {
-  // Add intents and answers
+
+  //greetings
+  manager.addDocument('en', 'Hello', 'greeting');
+  manager.addDocument('en', 'Hey', 'greeting');
+  manager.addDocument('en', 'Hi', 'greeting');
+  manager.addDocument('en', 'sup', 'greeting');
+  manager.addDocument('en', 'yo', 'greeting');
+  manager.addAnswer('en', 'greeting', 'I\'m here to assist you. How can I help?');
+  manager.addAnswer('en', 'greeting', 'Hello! Ready to assist your business needs.');
+  manager.addAnswer('en', 'greeting', 'Hello! How can I help you today?');
+  manager.addAnswer('en', 'greeting', 'Hi there! What can I do for you?');
+
+  // adding new bills 
+  manager.addDocument("en", "add a new bill", "add.bill");
+  manager.addDocument("en", "save a new bill", "add.bill");
+  manager.addDocument("en", "create a new bill", "add.bill");
+manager.addAnswer("en", "add.bill", "Please provide the bill details in the format: [CustomerID], [TotalAmount], [PaymentStatus]");
+
+  // display bills 
   manager.addDocument("en", "display bills", "get.bills");
   manager.addDocument("en", "show me bills", "get.bills");
-  manager.addDocument("en", "add item", "add.item");
-  manager.addDocument("en", "get user details", "get.user");
-  manager.addDocument("en", "update item", "update.item");
-  manager.addDocument("en", "delete item", "delete.item");
-  manager.addDocument("en", "search item", "search.item");
-
   manager.addAnswer("en", "get.bills", "Fetching your latest bills...");
-  manager.addAnswer("en", "add.item", "Please provide the details of the item to add.");
-  manager.addAnswer("en", "get.user", "Fetching your details...");
-  manager.addAnswer("en", "update.item", "Updating the specified item...");
-  manager.addAnswer("en", "delete.item", "Deleting the specified item...");
-  manager.addAnswer("en", "search.item", "Searching for the item...");
+  
 
   await manager.train();
   manager.save();
@@ -59,25 +93,19 @@ app.post("/chat", async (req, res) => {
   let botMessage = response.answer;
 
   try {
-    // Handle SQL-based intents
     if (response.intent === "get.bills") {
-      const [rows] = await db.query("SELECT * FROM bills LIMIT 10");
-      botMessage = `Here are your latest bills:\n${rows
-        .map((row) => `Bill ID: ${row.id}, Amount: ${row.amount}`)
-        .join("\n")}`;
-    } else if (response.intent === "add.item") {
-      botMessage = "Please use the format: Add Item [name], [price]";
-    } else if (response.intent === "get.user") {
-      const [rows] = await db.query("SELECT * FROM users WHERE id = 1"); // Example query
+      const [rows] = await db.query("SELECT * FROM Bills LIMIT 10");
       botMessage = rows.length
-        ? `User Details:\nName: ${rows[0].name}, Email: ${rows[0].email}`
-        : "No user details found.";
-    } else if (response.intent === "update.item") {
-      botMessage = "Please use the format: Update Item [item_id], [new_name], [new_price]";
-    } else if (response.intent === "delete.item") {
-      botMessage = "Please use the format: Delete Item [item_id]";
-    } else if (response.intent === "search.item") {
-      botMessage = "Please specify the item name to search for.";
+        ? `Here are your latest bills:\n${rows
+            .map((row) => `Bill ID: ${row.BillID}, Amount: ${row.TotalAmount}, Date: ${row.BillDate}`)
+            .join("\n")}`
+        : "No bills found.";
+    } else if (response.intent === "greeting") {
+      botMessage = response.answer || "Hello! How can I assist you today?";
+    } else if (response.intent === "add.bill") {
+      botMessage = await addBill(userMessage);
+    } else {
+      botMessage = "Sorry, I didn't understand that. Can you please clarify your request?";
     }
   } catch (error) {
     console.error("Error interacting with database:", error);
@@ -86,6 +114,47 @@ app.post("/chat", async (req, res) => {
 
   res.json({ message: botMessage });
 });
+
+//sql funtcions are :
+
+// to add new bills
+const addBill = async (userMessage) => {
+  try {
+    // Extract details from user message
+    const userDetails = userMessage.split(",").map((item) => item.trim());
+    if (userDetails.length < 3) {
+      return "Please provide all details in the format: [CustomerName], [TotalAmount], [PaymentStatus]";
+    }
+
+    const [customerName, totalAmount, paymentStatus] = userDetails;
+
+    // Validate inputs
+    if (isNaN(totalAmount)) {
+      return "TotalAmount must be numeric.";
+    }
+
+    // Convert the payment status to a string
+    const paymentStatusString = paymentStatus.trim();
+
+    // Use the current date as the bill date
+    const billDate = new Date();
+
+    // Insert the bill into the database
+    const [result] = await db.query(
+      `INSERT INTO Bills (BillDate, CustomerName, TotalAmount, PaymentStatus) VALUES (?, ?, ?, ?)`,
+      [billDate, customerName, parseFloat(totalAmount), paymentStatusString]
+    );
+
+    if (result.affectedRows > 0) {
+      return `New bill added successfully! Bill ID: ${result.insertId}`;
+    } else {
+      return "Failed to add the bill. Please try again.";
+    }
+  } catch (error) {
+    console.error("Error adding bill:", error);
+    return "An error occurred while adding the bill. Please try again.";
+  }
+};
 
 
 

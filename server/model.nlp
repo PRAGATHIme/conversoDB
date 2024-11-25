@@ -34,6 +34,38 @@
           "useStemDict": true
         },
         "stemDict": {
+          "hello": {
+            "intent": "greeting",
+            "domain": "default"
+          },
+          "hey": {
+            "intent": "greeting",
+            "domain": "default"
+          },
+          "hi": {
+            "intent": "greeting",
+            "domain": "default"
+          },
+          "sup": {
+            "intent": "greeting",
+            "domain": "default"
+          },
+          "yo": {
+            "intent": "greeting",
+            "domain": "default"
+          },
+          "a,add,bill,new": {
+            "intent": "add.bill",
+            "domain": "default"
+          },
+          "a,bill,new,save": {
+            "intent": "add.bill",
+            "domain": "default"
+          },
+          "a,bill,creat,new": {
+            "intent": "add.bill",
+            "domain": "default"
+          },
           "bill,display": {
             "intent": "get.bills",
             "domain": "default"
@@ -41,37 +73,54 @@
           "bill,me,show": {
             "intent": "get.bills",
             "domain": "default"
-          },
-          "add,item": {
-            "intent": "add.item",
-            "domain": "default"
-          },
-          "detail,get,user": {
-            "intent": "get.user",
-            "domain": "default"
-          },
-          "item,updat": {
-            "intent": "update.item",
-            "domain": "default"
-          },
-          "delet,item": {
-            "intent": "delete.item",
-            "domain": "default"
-          },
-          "item,search": {
-            "intent": "search.item",
-            "domain": "default"
           }
         },
         "intentDict": {
-          "get.bills": "default",
-          "add.item": "default",
-          "get.user": "default",
-          "update.item": "default",
-          "delete.item": "default",
-          "search.item": "default"
+          "greeting": "default",
+          "add.bill": "default",
+          "get.bills": "default"
         },
         "sentences": [
+          {
+            "domain": "default",
+            "utterance": "Hello",
+            "intent": "greeting"
+          },
+          {
+            "domain": "default",
+            "utterance": "Hey",
+            "intent": "greeting"
+          },
+          {
+            "domain": "default",
+            "utterance": "Hi",
+            "intent": "greeting"
+          },
+          {
+            "domain": "default",
+            "utterance": "sup",
+            "intent": "greeting"
+          },
+          {
+            "domain": "default",
+            "utterance": "yo",
+            "intent": "greeting"
+          },
+          {
+            "domain": "default",
+            "utterance": "add a new bill",
+            "intent": "add.bill"
+          },
+          {
+            "domain": "default",
+            "utterance": "save a new bill",
+            "intent": "add.bill"
+          },
+          {
+            "domain": "default",
+            "utterance": "create a new bill",
+            "intent": "add.bill"
+          },
           {
             "domain": "default",
             "utterance": "display bills",
@@ -81,31 +130,6 @@
             "domain": "default",
             "utterance": "show me bills",
             "intent": "get.bills"
-          },
-          {
-            "domain": "default",
-            "utterance": "add item",
-            "intent": "add.item"
-          },
-          {
-            "domain": "default",
-            "utterance": "get user details",
-            "intent": "get.user"
-          },
-          {
-            "domain": "default",
-            "utterance": "update item",
-            "intent": "update.item"
-          },
-          {
-            "domain": "default",
-            "utterance": "delete item",
-            "intent": "delete.item"
-          },
-          {
-            "domain": "default",
-            "utterance": "search item",
-            "intent": "search.item"
           }
         ],
         "domains": {
@@ -122,61 +146,85 @@
               "log": true
             },
             "features": {
-              "display": 1,
-              "bill": 1,
-              "show": 1,
-              "me": 1,
+              "hello": 1,
+              "hey": 1,
+              "hi": 1,
+              "sup": 1,
+              "yo": 1,
               "add": 1,
-              "item": 1,
-              "get": 1,
-              "user": 1,
-              "detail": 1,
-              "updat": 1,
-              "delet": 1,
-              "search": 1
+              "a": 1,
+              "new": 1,
+              "bill": 1,
+              "save": 1,
+              "creat": 1,
+              "display": 1,
+              "show": 1,
+              "me": 1
             },
             "intents": {
-              "get.bills": 1,
-              "add.item": 1,
-              "get.user": 1,
-              "update.item": 1,
-              "delete.item": 1,
-              "search.item": 1
+              "greeting": 1,
+              "add.bill": 1,
+              "get.bills": 1
             },
             "intentFeatures": {
+              "greeting": {
+                "hello": 1,
+                "hey": 1,
+                "hi": 1,
+                "sup": 1,
+                "yo": 1
+              },
+              "add.bill": {
+                "add": 1,
+                "a": 1,
+                "new": 1,
+                "bill": 1,
+                "save": 1,
+                "creat": 1
+              },
               "get.bills": {
                 "display": 1,
                 "bill": 1,
                 "show": 1,
                 "me": 1
-              },
-              "add.item": {
-                "add": 1,
-                "item": 1
-              },
-              "get.user": {
-                "get": 1,
-                "user": 1,
-                "detail": 1
-              },
-              "update.item": {
-                "updat": 1,
-                "item": 1
-              },
-              "delete.item": {
-                "delet": 1,
-                "item": 1
-              },
-              "search.item": {
-                "search": 1,
-                "item": 1
               }
             },
             "featuresToIntent": {
-              "display": [
-                "get.bills"
+              "hello": [
+                "greeting"
+              ],
+              "hey": [
+                "greeting"
+              ],
+              "hi": [
+                "greeting"
+              ],
+              "sup": [
+                "greeting"
+              ],
+              "yo": [
+                "greeting"
+              ],
+              "add": [
+                "add.bill"
+              ],
+              "a": [
+                "add.bill"
+              ],
+              "new": [
+                "add.bill"
               ],
               "bill": [
+                "add.bill",
+                "get.bills"
+              ],
+              "save": [
+                "add.bill"
+              ],
+              "creat": [
+                "add.bill"
+              ],
+              "display": [
                 "get.bills"
               ],
               "show": [
@@ -184,33 +232,6 @@
               ],
               "me": [
                 "get.bills"
-              ],
-              "add": [
-                "add.item"
-              ],
-              "item": [
-                "add.item",
-                "update.item",
-                "delete.item",
-                "search.item"
-              ],
-              "get": [
-                "get.user"
-              ],
-              "user": [
-                "get.user"
-              ],
-              "detail": [
-                "get.user"
-              ],
-              "updat": [
-                "update.item"
-              ],
-              "delet": [
-                "delete.item"
-              ],
-              "search": [
-                "search.item"
               ]
             },
             "neuralNetwork": {
@@ -226,117 +247,77 @@
                 "log": true
               },
               "features": [
-                "display",
-                "bill",
-                "show",
-                "me",
+                "hello",
+                "hey",
+                "hi",
+                "sup",
+                "yo",
                 "add",
-                "item",
-                "get",
-                "user",
-                "detail",
-                "updat",
-                "delet",
-                "search"
+                "a",
+                "new",
+                "bill",
+                "save",
+                "creat",
+                "display",
+                "show",
+                "me"
               ],
               "intents": [
-                "get.bills",
-                "add.item",
-                "get.user",
-                "update.item",
-                "delete.item",
-                "search.item"
+                "greeting",
+                "add.bill",
+                "get.bills"
               ],
               "perceptrons": [
                 [
-                  4.788704872131348,
-                  7.193778038024902,
-                  2.4043779373168945,
-                  2.4043779373168945,
-                  -0.502490222454071,
-                  -1.850476622581482,
-                  -0.7631682753562927,
-                  -0.7631682753562927,
-                  -0.7631682753562927,
-                  -0.45149609446525574,
-                  -0.440738320350647,
-                  -0.43772879242897034,
-                  2.2898915366536143
+                  4.927606105804443,
+                  5.033191204071045,
+                  4.9930877685546875,
+                  4.951584815979004,
+                  4.908766269683838,
+                  -0.6948177218437195,
+                  -1.7490719556808472,
+                  -1.7490719556808472,
+                  -6.271714210510254,
+                  -0.5571497082710266,
+                  -0.4241151511669159,
+                  -2.90000319480896,
+                  -1.604422926902771,
+                  -1.604422926902771,
+                  9.277728512834717
                 ],
                 [
-                  -0.29381218552589417,
-                  -0.445679634809494,
-                  -0.14937104284763336,
-                  -0.14937104284763336,
-                  11.042325973510742,
-                  2.252206563949585,
-                  -0.29936155676841736,
-                  -0.29936155676841736,
-                  -0.29936155676841736,
-                  -2.9475576877593994,
-                  -2.9380881786346436,
-                  -2.9114303588867188,
-                  0.7439178052725367
+                  -0.30636945366859436,
+                  -0.2970101535320282,
+                  -0.28791385889053345,
+                  -0.28358882665634155,
+                  -0.27552470564842224,
+                  1.7089942693710327,
+                  5.21769380569458,
+                  5.21769380569458,
+                  1.8970494270324707,
+                  1.7864859104156494,
+                  1.7206096649169922,
+                  -2.0673317909240723,
+                  -1.211734414100647,
+                  -1.211734414100647,
+                  0.20608900020097012
                 ],
                 [
-                  -0.47550058364868164,
-                  -0.7783798575401306,
-                  -0.29418668150901794,
-                  -0.29418668150901794,
-                  -0.2167666107416153,
-                  -1.0593940019607544,
-                  4.344627857208252,
-                  4.344627857208252,
-                  4.344627857208252,
-                  -0.2920773923397064,
-                  -0.27320054173469543,
-                  -0.25321725010871887,
-                  1.2518408516515096
-                ],
-                [
-                  -0.2917553186416626,
-                  -0.46919623017311096,
-                  -0.1685575544834137,
-                  -0.1685575544834137,
-                  -2.9038991928100586,
-                  2.2471084594726562,
-                  -0.25165051221847534,
-                  -0.25165051221847534,
-                  -0.25165051221847534,
-                  11.039690971374512,
-                  -2.9506473541259766,
-                  -2.9412074089050293,
-                  0.7616050954796966
-                ],
-                [
-                  -0.29298728704452515,
-                  -0.4888027608394623,
-                  -0.18698427081108093,
-                  -0.18698427081108093,
-                  -2.93159818649292,
-                  2.255671739578247,
-                  -0.2512911260128021,
-                  -0.2512911260128021,
-                  -0.2512911260128021,
-                  -2.9022769927978516,
-                  11.040685653686523,
-                  -2.94964337348938,
-                  0.7578348902029887
-                ],
-                [
-                  -0.3096047043800354,
-                  -0.5250989198684692,
-                  -0.19720558822155,
-                  -0.19720558822155,
-                  -2.9385056495666504,
-                  2.2696781158447266,
-                  -0.2582715153694153,
-                  -0.2582715153694153,
-                  -0.2582715153694153,
-                  -2.9277193546295166,
-                  -2.8989107608795166,
-                  11.04399585723877,
-                  0.7420517155420823
+                  -0.9503980278968811,
+                  -0.9394907355308533,
+                  -0.9284238815307617,
+                  -0.9172136187553406,
+                  -0.9058755040168762,
+                  -1.1206697225570679,
+                  -3.23443865776062,
+                  -3.23443865776062,
+                  6.598844051361084,
+                  -1.0815380811691284,
+                  -1.0261136293411255,
+                  6.402034759521484,
+                  3.4134905338287354,
+                  3.4134905338287354,
+                  0.9683388592854637
                 ]
               ]
             }
@@ -348,31 +329,43 @@
     "extraSentences": [
       [
         "en",
+        "Hello"
+      ],
+      [
+        "en",
+        "Hey"
+      ],
+      [
+        "en",
+        "Hi"
+      ],
+      [
+        "en",
+        "sup"
+      ],
+      [
+        "en",
+        "yo"
+      ],
+      [
+        "en",
+        "add a new bill"
+      ],
+      [
+        "en",
+        "save a new bill"
+      ],
+      [
+        "en",
+        "create a new bill"
+      ],
+      [
+        "en",
         "display bills"
       ],
       [
         "en",
         "show me bills"
-      ],
-      [
-        "en",
-        "add item"
-      ],
-      [
-        "en",
-        "get user details"
-      ],
-      [
-        "en",
-        "update item"
-      ],
-      [
-        "en",
-        "delete item"
-      ],
-      [
-        "en",
-        "search item"
       ]
     ]
   },
@@ -390,34 +383,28 @@
     },
     "responses": {
       "en": {
+        "greeting": [
+          {
+            "answer": "I'm here to assist you. How can I help?"
+          },
+          {
+            "answer": "Hello! Ready to assist your business needs."
+          },
+          {
+            "answer": "Hello! How can I help you today?"
+          },
+          {
+            "answer": "Hi there! What can I do for you?"
+          }
+        ],
+        "add.bill": [
+          {
+            "answer": "Please provide the bill details in the format: [CustomerID], [TotalAmount], [PaymentStatus]"
+          }
+        ],
         "get.bills": [
           {
             "answer": "Fetching your latest bills..."
-          }
-        ],
-        "add.item": [
-          {
-            "answer": "Please provide the details of the item to add."
-          }
-        ],
-        "get.user": [
-          {
-            "answer": "Fetching your details..."
-          }
-        ],
-        "update.item": [
-          {
-            "answer": "Updating the specified item..."
-          }
-        ],
-        "delete.item": [
-          {
-            "answer": "Deleting the specified item..."
-          }
-        ],
-        "search.item": [
-          {
-            "answer": "Searching for the item..."
           }
         ]
       }
