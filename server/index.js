@@ -120,21 +120,19 @@ app.post("/chat", async (req, res) => {
 // to add new bills
 const addBill = async (userMessage) => {
   try {
-    // Extract details from user message
-    const userDetails = userMessage.split(",").map((item) => item.trim());
-    if (userDetails.length < 3) {
-      return "Please provide all details in the format: [CustomerName], [TotalAmount], [PaymentStatus]";
+    // Define a regex to extract customer name, amount, and payment status
+    const match = userMessage.match(/for\s(.+?),\s([\d.]+),\s(.+)/i);
+
+    if (!match) {
+      return "Please provide the details in the format: Add a bill for [CustomerName], [TotalAmount], [PaymentStatus]";
     }
 
-    const [customerName, totalAmount, paymentStatus] = userDetails;
+    const [_, customerName, totalAmount, paymentStatus] = match;
 
     // Validate inputs
     if (isNaN(totalAmount)) {
       return "TotalAmount must be numeric.";
     }
-
-    // Convert the payment status to a string
-    const paymentStatusString = paymentStatus.trim();
 
     // Use the current date as the bill date
     const billDate = new Date();
@@ -142,7 +140,7 @@ const addBill = async (userMessage) => {
     // Insert the bill into the database
     const [result] = await db.query(
       `INSERT INTO Bills (BillDate, CustomerName, TotalAmount, PaymentStatus) VALUES (?, ?, ?, ?)`,
-      [billDate, customerName, parseFloat(totalAmount), paymentStatusString]
+      [billDate, customerName.trim(), parseFloat(totalAmount), paymentStatus.trim()]
     );
 
     if (result.affectedRows > 0) {
@@ -155,7 +153,6 @@ const addBill = async (userMessage) => {
     return "An error occurred while adding the bill. Please try again.";
   }
 };
-
 
 
 // remove here
