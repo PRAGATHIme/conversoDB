@@ -21,7 +21,7 @@ const db = await mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
 });
-//add here
+//add test part here
 
 const initializeTables = async () => {
   const createTables = [
@@ -120,14 +120,22 @@ app.post("/chat", async (req, res) => {
 // to add new bills
 const addBill = async (userMessage) => {
   try {
+    // Replace occurrences of "comma" (case-insensitive) with a literal comma
+    let sanitizedMessage = userMessage.replace(/\s*comma\s*/gi, ',');
+
+    sanitizedMessage = sanitizedMessage.replace(/[.!?]/g, '');
+
     // Define a regex to extract customer name, amount, and payment status
-    const match = userMessage.match(/for\s(.+?),\s([\d.]+),\s(.+)/i);
+    const match = sanitizedMessage.match(/for\s+([\w\s]+?)[,\s]+([\d,]+)[,\s]+(.+)/i);
 
     if (!match) {
       return "Please provide the details in the format: Add a bill for [CustomerName], [TotalAmount], [PaymentStatus]";
     }
 
-    const [_, customerName, totalAmount, paymentStatus] = match;
+    const [_, customerName, totalAmountRaw, paymentStatus] = match;
+
+    // Clean and convert the amount (remove commas and parse as a number)
+    const totalAmount = parseFloat(totalAmountRaw.replace(/,/g, ''));
 
     // Validate inputs
     if (isNaN(totalAmount)) {
@@ -140,7 +148,7 @@ const addBill = async (userMessage) => {
     // Insert the bill into the database
     const [result] = await db.query(
       `INSERT INTO Bills (BillDate, CustomerName, TotalAmount, PaymentStatus) VALUES (?, ?, ?, ?)`,
-      [billDate, customerName.trim(), parseFloat(totalAmount), paymentStatus.trim()]
+      [billDate, customerName.trim(), totalAmount, paymentStatus.trim()]
     );
 
     if (result.affectedRows > 0) {
@@ -155,7 +163,10 @@ const addBill = async (userMessage) => {
 };
 
 
-// remove here
+
+
+
+// test ends here
 app.listen(PORT, ()=>{
     console.log("app is listening");
 });
