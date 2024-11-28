@@ -1,4 +1,3 @@
-/* Reset default styles */
 * {
     margin: 0;
     padding: 0;
@@ -6,14 +5,12 @@
     transition: all 0.3s ease-in-out;
   }
   
-  /* Background and fonts */
   body {
     font-family: 'Montserrat', sans-serif;
     color: #fff;
     overflow-x: hidden;
     height: 100vh;
-    background: linear-gradient(135deg, #2a2a72, #009ffd); /* Gradient background */
-    /* background-size: 400% 400%; */
+    background: linear-gradient(135deg, #2a2a72, #009ffd); 
     animation: gradientBG 15s ease infinite;
   }
   

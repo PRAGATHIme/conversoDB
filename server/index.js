@@ -94,12 +94,8 @@ app.post("/chat", async (req, res) => {
 
   try {
     if (response.intent === "get.bills") {
-      const [rows] = await db.query("SELECT * FROM Bills LIMIT 10");
-      botMessage = rows.length
-        ? `Here are your latest bills:\n${rows
-            .map((row) => `Bill ID: ${row.BillID}, Amount: ${row.TotalAmount}, Date: ${row.BillDate}`)
-            .join("\n")}`
-        : "No bills found.";
+      const [rows] = await db.query("SELECT BillID, CustomerName, TotalAmount, BillDate FROM Bills LIMIT 10");
+      botMessage = formatBillsTable(rows);
     } else if (response.intent === "greeting") {
       botMessage = response.answer || "Hello! How can I assist you today?";
     } else if (response.intent === "add.bill") {
@@ -120,12 +116,10 @@ app.post("/chat", async (req, res) => {
 // to add new bills
 const addBill = async (userMessage) => {
   try {
-    // Replace occurrences of "comma" (case-insensitive) with a literal comma
     let sanitizedMessage = userMessage.replace(/\s*comma\s*/gi, ',');
 
     sanitizedMessage = sanitizedMessage.replace(/[.!?]/g, '');
 
-    // Define a regex to extract customer name, amount, and payment status
     const match = sanitizedMessage.match(/for\s+([\w\s]+?)[,\s]+([\d,]+)[,\s]+(.+)/i);
 
     if (!match) {
@@ -134,18 +128,14 @@ const addBill = async (userMessage) => {
 
     const [_, customerName, totalAmountRaw, paymentStatus] = match;
 
-    // Clean and convert the amount (remove commas and parse as a number)
     const totalAmount = parseFloat(totalAmountRaw.replace(/,/g, ''));
 
-    // Validate inputs
     if (isNaN(totalAmount)) {
       return "TotalAmount must be numeric.";
     }
 
-    // Use the current date as the bill date
     const billDate = new Date();
 
-    // Insert the bill into the database
     const [result] = await db.query(
       `INSERT INTO Bills (BillDate, CustomerName, TotalAmount, PaymentStatus) VALUES (?, ?, ?, ?)`,
       [billDate, customerName.trim(), totalAmount, paymentStatus.trim()]
@@ -161,6 +151,42 @@ const addBill = async (userMessage) => {
     return "An error occurred while adding the bill. Please try again.";
   }
 };
+
+const formatBillsTable = (bills) => {
+  if (bills.length === 0) {
+    return "No bills found.";
+  }
+
+  let table = `
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Bill ID</th>
+          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Customer Name</th>
+          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Amount</th>
+          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  
+  bills.forEach((bill) => {
+    table += `
+      <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;">${bill.BillID}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${bill.CustomerName}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${bill.TotalAmount}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${new Date(bill.BillDate).toLocaleString()}</td>
+      </tr>
+    `;
+  });
+
+  table += `</tbody></table>`;
+  return `Here are your latest bills:<br>${table}`;
+};
+
+
+
 
 
 

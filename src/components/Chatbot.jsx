@@ -138,9 +138,8 @@ const Chatbot = () => {
               <div
                 key={index}
                 className={`chat-message ${chat.sender === "user" ? "user" : "bot"}`}
-              >
-                {chat.message}
-              </div>
+                dangerouslySetInnerHTML={{ __html: chat.message }} // Render HTML content
+              />
             ))}
             <div ref={chatEndRef}></div> {/* Invisible element to scroll into view */}
           </div>
