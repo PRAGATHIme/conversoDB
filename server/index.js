@@ -54,14 +54,12 @@ const initializeTables = async () => {
   }
 };
 
-// Initialize tables before starting the server
 await initializeTables();
 
 
 
 const manager = new NlpManager({ languages: ["en"] });
 
-// Train the NLP model with intents and responses
 const trainNLPModel = async () => {
 
   //greetings
@@ -96,6 +94,13 @@ manager.addDocument("en", "add a new customer", "add.customer");
 manager.addDocument("en", "create a new customer", "add.customer");
 manager.addDocument("en", "save customer details", "add.customer");
 manager.addAnswer("en", "add.customer", "Please provide the customer details in the format: [CustomerName], [Email (optional)], [Phone]");
+
+// to update phone
+manager.addDocument("en", "update phone for [CustomerName], [NewPhone]", "update.customer.phone");
+manager.addDocument("en", "change phone for [CustomerName], [NewPhone]", "update.customer.phone");
+manager.addDocument("en", "modify contact info for [CustomerName], [NewPhone]", "update.customer.phone");
+manager.addAnswer("en", "update.customer.phone", "Updating the phone number...");
+
   
 
   await manager.train();
@@ -104,7 +109,6 @@ manager.addAnswer("en", "add.customer", "Please provide the customer details in 
 
 await trainNLPModel();
 
-// Chat endpoint
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
   const response = await manager.process("en", userMessage);
@@ -130,6 +134,8 @@ app.post("/chat", async (req, res) => {
       botMessage = formatBillsTable(rows);
     } else if (response.intent === "get.customer") {
       botMessage = await getCustomerDetails(userMessage);
+    } else if (response.intent === "update.customer.phone") { 
+      botMessage = await updateCustomerPhone(userMessage);
     } else if (response.intent === "greeting") {
       botMessage = response.answer || "Hello! How can I assist you today?";
     } else if (response.intent === "add.bill") {
@@ -148,7 +154,7 @@ app.post("/chat", async (req, res) => {
 });
 
 
-
+// this fucntion is to add new bills
 const addBill = async (userMessage) => {
   try {
     let sanitizedMessage = userMessage.replace(/\s*comma\s*/gi, ',');
@@ -235,6 +241,7 @@ const formatBillsTable = (bills) => {
   return `Here are your latest bills:<br>${table}`;
 };
 
+// this function is to add new customers
 const addCustomer = async (userMessage) => {
   try {
     let sanitizedMessage = userMessage.replace(/\s*comma\s*/gi, ',');  
@@ -273,6 +280,7 @@ const addCustomer = async (userMessage) => {
   }
 };
 
+// this function is to display customer's details
 const getCustomerDetails = async (userMessage) => {
   try {
     const match = userMessage.match(/of\s+([A-Za-z\s]+)/i);
@@ -319,8 +327,44 @@ const getCustomerDetails = async (userMessage) => {
 };
 
 
+// this function is for updating phone number  of a customer
+const updateCustomerPhone = async (userMessage) => {
+  try {
+    let sanitizedMessage = userMessage.replace(/\s*comma\s*/gi, ',');  
+    sanitizedMessage = sanitizedMessage.replace(/[.!?-]/g, '');  
 
+    const match = sanitizedMessage.match(/(?:for|of)\s+([A-Za-z\s]+)(?:,\s*|\s+)(\d{10,15})/i);
 
+    if (!match) {
+      return "Please provide the details in the format: Update phone for [CustomerName], [NewPhone].";
+    }
+
+    const [_, customerName, newPhone] = match;
+
+    const [customerDetails] = await db.query(
+      "SELECT CustomerID FROM Customers WHERE LOWER(Name) = LOWER(?) LIMIT 1",
+      [customerName.trim()]
+    );
+
+    if (customerDetails.length === 0) {
+      return `Customer with name "${customerName}" not found.`;
+    }
+
+    const [result] = await db.query(
+      "UPDATE Customers SET Phone = ? WHERE CustomerID = ?",
+      [newPhone.trim(), customerDetails[0].CustomerID]
+    );
+
+    if (result.affectedRows > 0) {
+      return `Phone number updated successfully for ${customerName}!`;
+    } else {
+      return "Failed to update the phone number. Please try again.";
+    }
+  } catch (error) {
+    console.error("Error updating customer phone number:", error);
+    return "An error occurred while updating the phone number. Please try again.";
+  }
+};
 
 
 
