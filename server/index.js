@@ -26,14 +26,22 @@ const db = await mysql.createPool({
 const initializeTables = async () => {
   const createTables = [
     `
+    CREATE TABLE IF NOT EXISTS Customers (
+        CustomerID INT AUTO_INCREMENT PRIMARY KEY,
+        Name VARCHAR(250),
+        Phone VARCHAR(20)
+    )
+    `  ,
+   `
     CREATE TABLE IF NOT EXISTS Bills (
         BillID INT AUTO_INCREMENT PRIMARY KEY,
         BillDate DATETIME,
-        CustomerName VARCHAR(250),
+        CustomerID INT,
         TotalAmount DECIMAL(10, 2),
-        PaymentStatus VARCHAR(250)
+        PaymentStatus VARCHAR(250),
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
     )
-    `    
+    `
   ];
 
   try {
@@ -77,6 +85,17 @@ manager.addAnswer("en", "add.bill", "Please provide the bill details in the form
   manager.addDocument("en", "display bills", "get.bills");
   manager.addDocument("en", "show me bills", "get.bills");
   manager.addAnswer("en", "get.bills", "Fetching your latest bills...");
+
+  //to get customer details
+  manager.addDocument("en", "get customer details", "get.customer");
+manager.addDocument("en", "show me customer details", "get.customer");
+manager.addAnswer("en", "get.customer", "Fetching customer details...");
+
+// to add  new customer
+manager.addDocument("en", "add a new customer", "add.customer");
+manager.addDocument("en", "create a new customer", "add.customer");
+manager.addDocument("en", "save customer details", "add.customer");
+manager.addAnswer("en", "add.customer", "Please provide the customer details in the format: [CustomerName], [Email (optional)], [Phone]");
   
 
   await manager.train();
@@ -94,12 +113,29 @@ app.post("/chat", async (req, res) => {
 
   try {
     if (response.intent === "get.bills") {
-      const [rows] = await db.query("SELECT BillID, CustomerName, TotalAmount, BillDate FROM Bills LIMIT 10");
+      const [rows] = await db.query(`
+      SELECT 
+        Bills.BillID,
+        Customers.Name AS CustomerName,
+        Bills.TotalAmount,
+        Bills.BillDate
+      FROM 
+        Bills
+      JOIN 
+        Customers
+      ON 
+        Bills.CustomerID = Customers.CustomerID
+      LIMIT 10
+    `);
       botMessage = formatBillsTable(rows);
+    } else if (response.intent === "get.customer") {
+      botMessage = await getCustomerDetails(userMessage);
     } else if (response.intent === "greeting") {
       botMessage = response.answer || "Hello! How can I assist you today?";
     } else if (response.intent === "add.bill") {
       botMessage = await addBill(userMessage);
+    } else if (response.intent === "add.customer") {
+      botMessage = await addCustomer(userMessage);
     } else {
       botMessage = "Sorry, I didn't understand that. Can you please clarify your request?";
     }
@@ -111,9 +147,8 @@ app.post("/chat", async (req, res) => {
   res.json({ message: botMessage });
 });
 
-//sql funtcions are :
 
-// to add new bills
+
 const addBill = async (userMessage) => {
   try {
     let sanitizedMessage = userMessage.replace(/\s*comma\s*/gi, ',');
@@ -127,7 +162,6 @@ const addBill = async (userMessage) => {
     }
 
     const [_, customerName, totalAmountRaw, paymentStatus] = match;
-
     const totalAmount = parseFloat(totalAmountRaw.replace(/,/g, ''));
 
     if (isNaN(totalAmount)) {
@@ -136,13 +170,29 @@ const addBill = async (userMessage) => {
 
     const billDate = new Date();
 
-    const [result] = await db.query(
-      `INSERT INTO Bills (BillDate, CustomerName, TotalAmount, PaymentStatus) VALUES (?, ?, ?, ?)`,
-      [billDate, customerName.trim(), totalAmount, paymentStatus.trim()]
+    const [existingCustomer] = await db.query(
+      "SELECT * FROM Customers WHERE Name = ? LIMIT 1", 
+      [customerName.trim()]
     );
 
-    if (result.affectedRows > 0) {
-      return `New bill added successfully! Bill ID: ${result.insertId}`;
+    let customerID;
+    if (existingCustomer.length > 0) {
+      customerID = existingCustomer[0].CustomerID;
+    } else {
+      const [result] = await db.query(
+        `INSERT INTO Customers (Name) VALUES (?)`,
+        [customerName.trim()]
+      );
+      customerID = result.insertId;
+    }
+
+    const [billResult] = await db.query(
+      `INSERT INTO Bills (BillDate, CustomerID, TotalAmount, PaymentStatus) VALUES (?, ?, ?, ?)`,
+      [billDate, customerID, totalAmount, paymentStatus.trim()]
+    );
+
+    if (billResult.affectedRows > 0) {
+      return `New bill added successfully! Bill ID: ${billResult.insertId}`;
     } else {
       return "Failed to add the bill. Please try again.";
     }
@@ -161,10 +211,10 @@ const formatBillsTable = (bills) => {
     <table style="width: 100%; border-collapse: collapse;">
       <thead>
         <tr>
-          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Bill ID</th>
-          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Customer Name</th>
-          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Amount</th>
-          <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">Date</th>
+          <th>Bill ID</th>
+          <th>Customer Name</th>
+          <th>Amount</th>
+          <th>Date</th>
         </tr>
       </thead>
       <tbody>
@@ -173,10 +223,10 @@ const formatBillsTable = (bills) => {
   bills.forEach((bill) => {
     table += `
       <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;">${bill.BillID}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${bill.CustomerName}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${bill.TotalAmount}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${new Date(bill.BillDate).toLocaleString()}</td>
+        <td>${bill.BillID}</td>
+        <td>${bill.CustomerName}</td>
+        <td>${bill.TotalAmount}</td>
+        <td>${new Date(bill.BillDate).toLocaleString()}</td>
       </tr>
     `;
   });
@@ -185,6 +235,88 @@ const formatBillsTable = (bills) => {
   return `Here are your latest bills:<br>${table}`;
 };
 
+const addCustomer = async (userMessage) => {
+  try {
+    let sanitizedMessage = userMessage.replace(/\s*comma\s*/gi, ',');  
+    sanitizedMessage = sanitizedMessage.replace(/[.!?-]/g, '');  
+
+    const match = sanitizedMessage.match(/customer\s+([A-Za-z\s]+)(?:,\s*|\s+)(\d{10,15})/i);
+
+    if (!match) {
+      return "Please provide the customer details in the format: Add a customer [CustomerName], [Phone].";
+    }
+
+    const [_, customerName, phone] = match;
+
+    const [existingCustomer] = await db.query(
+      "SELECT CustomerID FROM Customers WHERE Name = ? LIMIT 1",
+      [customerName.trim()]
+    );
+
+    if (existingCustomer.length > 0) {
+      return `Customer already exists with Customer ID: ${existingCustomer[0].CustomerID}`;
+    }
+
+    const [result] = await db.query(
+      `INSERT INTO Customers (Name, Phone) VALUES (?, ?)`,
+      [customerName.trim(), phone.trim()]
+    );
+
+    if (result.affectedRows > 0) {
+      return `New customer added successfully! Customer Name: ${customerName}`;
+    } else {
+      return "Failed to add the customer. Please try again.";
+    }
+  } catch (error) {
+    console.error("Error adding customer:", error);
+    return "An error occurred while adding the customer. Please try again.";
+  }
+};
+
+const getCustomerDetails = async (userMessage) => {
+  try {
+    const match = userMessage.match(/of\s+([A-Za-z\s]+)/i);
+    if (!match) {
+      return "Please specify a valid customer name.";
+    }
+
+    const customerName = match[1].trim();
+
+    const [customerDetails] = await db.query(
+      "SELECT * FROM Customers WHERE LOWER(Name) = LOWER(?) LIMIT 1",
+      [customerName]
+    );
+
+    if (customerDetails.length > 0) {
+      const phone = customerDetails[0].Phone || "not provided"; 
+      
+      let table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${customerDetails[0].CustomerID}</td>
+              <td>${customerDetails[0].Name}</td>
+              <td>${phone}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+      return `Here are the customer details:<br>${table}`;
+    } else {
+      return "Customer not found.";
+    }
+  } catch (error) {
+    console.error("Error fetching customer details:", error);
+    return "An error occurred while fetching customer details. Please try again.";
+  }
+};
 
 
 
