@@ -18,7 +18,7 @@
   }
   
   
-  .chatbot {
+  .profile {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -27,7 +27,7 @@
     color: var(--text-color);
   }
   
-  .chatbot-header {
+  .profile-header {
     background-color: var(--header-background-color);
     color: var(--header-text-color);
     padding: 11px;
