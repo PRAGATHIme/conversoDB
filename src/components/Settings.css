@@ -1,0 +1,177 @@
+/* Light and Dark Mode Variables */
+:root {
+    --background-color: #ffffff;
+    --header-background-color: #4a90e2;
+    --header-text-color: #ffffff;
+    --body-background-color: #f0f4f8;
+    --chat-display-background: #e4eef4;
+    --user-message-background: #d6f5d6;
+    --bot-message-background: #e6e6e6;
+    --text-color: #000000;
+    --button-background-color: #4a90e2;
+    --button-text-color: #ffffff;
+    --button-hover-background: #357abd;
+  }
+  
+  .dark-mode {
+    --background-color: #2a2a72;
+    --header-background-color: #556de7;
+    --header-text-color: #f5f5f5;
+    --body-background-color: #13094a;
+    --chat-display-background: #6e83e9;
+    --user-message-background: #5675f0;
+    --bot-message-background: #240d97;
+    --text-color: #e0e0e0;
+    --button-background-color: #3737f1;
+    --button-text-color: #f5f5f5;
+    --button-hover-background: #13226b;
+  }
+  
+  /* Navbar Styles */
+  .navbar {
+    width: 100%;
+    background-color: var(--header-background-color);
+    padding: 0% 0;
+    display: flex;
+    justify-content: center; /* Center align content horizontally */
+    align-items: center;    /* Align content vertically */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+  
+  .navbar a {
+    color: var(--header-text-color);
+    text-decoration: none;
+    margin: 0 20px;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  
+  .navbar a:hover {
+    color: var(--button-hover-background);
+  }
+  
+  /* General Settings Page Styles */
+  .settings-container {
+    max-width: 900px;
+    margin: 80px auto 40px auto;  /* Top margin to avoid Navbar overlap, bottom margin for footer */
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border-radius: 10px;
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .header h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2, h3, h4 {
+    color: var(--header-background-color);
+  }
+  
+  button.rounded-button {
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button.rounded-button:hover {
+    background-color: var(--button-hover-background);
+  }
+  
+  button.rounded-button:active {
+    background-color: var(--button-background-color);
+  }
+  
+  label {
+    font-size: 1rem;
+    margin: 10px 0;
+    display: inline-block;
+  }
+  
+  .input-field {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    background-color: var(--chat-display-background);
+    color: var(--text-color);
+  }
+  
+  .settings-container section {
+    margin-bottom: 30px;
+  }
+  
+  .settings-container section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .settings-container section h4 {
+    font-size: 1.2rem;
+    margin-top: 20px;
+  }
+  
+  /* Notification Preferences */
+  input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  
+  /* Dark Mode Toggle Button */
+  .dark-mode-toggle {
+    position: fixed;
+    left: 20px;
+    bottom: 40px;
+    padding: 10px 15px;
+    border-radius: 50%;
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  
+  .dark-mode-toggle:hover {
+    background-color: var(--button-hover-background);
+    transform: scale(1.1);
+  }
+  
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1rem;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+    background-color: var(--header-background-color);
+    color: var(--header-text-color);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

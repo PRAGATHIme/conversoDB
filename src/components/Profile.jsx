@@ -1,10 +1,12 @@
 import React from "react";
-
+import Navbar from "./Navbar";
+import "./Profile.css";
 const Profile = () => {
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
-      <h2>Profile Page</h2>
-      <p>This is where you can view and manage your profile information.</p>
+      <h2>Enterprise name</h2>
+      <p>Enterprise Owner</p>
+      <p>Contact</p>
     </div>
   );
 };
